@@ -1,3 +1,5 @@
+package io.vdev.blockchain;
+
 import io.vdev.dapp.Transaction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
