@@ -23,8 +23,8 @@ public class BlockchainUtilsTest {
         RSAPublicKey originalPublicKey = (RSAPublicKey) pair.getPublic();
         BlockchainUtils.generatePemFile(pair);
         
-        RSAPrivateKey privateKey = BlockchainUtils.getPrivateKey(new File(System.getProperty("user.dir") + "/id_rsa"));
-        RSAPublicKey publicKey = BlockchainUtils.getPublicKey(new File(System.getProperty("user.dir") + "/id_rsa_pub"));
+        RSAPrivateKey privateKey = BlockchainUtils.getPrivateKey(new File(System.getProperty("user.dir") + "/keys/id_rsa"));
+        RSAPublicKey publicKey = BlockchainUtils.getPublicKey(new File(System.getProperty("user.dir") + "/keys/id_rsa_pub"));
 
         Assertions.assertEquals(originalPrivateKey, privateKey);
         Assertions.assertEquals(originalPublicKey, publicKey);

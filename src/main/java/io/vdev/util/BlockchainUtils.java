@@ -24,13 +24,17 @@ public class BlockchainUtils {
     }
 
     public static void generatePemFile(KeyPair pair) throws IOException {
+        File keysDirectory = new File("keys");
+        if(!keysDirectory.exists())
+            keysDirectory.mkdir();
+
         RSAPrivateKey privateKey = (RSAPrivateKey) pair.getPrivate();
         PemFile pemFile = new PemFile(privateKey, "RSA PRIVATE KEY");
-        pemFile.write("id_rsa");
+        pemFile.write("keys/id_rsa");
 
         RSAPublicKey publicKey = (RSAPublicKey) pair.getPublic();
         PemFile publicPem = new PemFile(publicKey, "RSA PUBLIC KEY");
-        publicPem.write("id_rsa_pub");
+        publicPem.write("keys/id_rsa_pub");
     }
 
     public static RSAPrivateKey getPrivateKey(File file) throws NoSuchAlgorithmException {
