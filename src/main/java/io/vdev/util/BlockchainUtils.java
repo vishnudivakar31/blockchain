@@ -17,28 +17,32 @@ import java.security.spec.X509EncodedKeySpec;
 
 public class BlockchainUtils {
 
+    private static final String ENCRYPTION_ALGORITHM = "RSA";
+    private static final String HASHING_ALGORITHM = "SHA-256";
+    private static final Integer KEY_SIZE = 2048;
+
     public static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-        generator.initialize(2048, new SecureRandom());
+        KeyPairGenerator generator = KeyPairGenerator.getInstance(ENCRYPTION_ALGORITHM);
+        generator.initialize(KEY_SIZE, new SecureRandom());
         return generator.genKeyPair();
     }
 
     public static void generatePemFile(KeyPair pair) throws IOException {
-        File keysDirectory = new File("keys");
+        File keysDirectory = new File(Constants.KEYS_DIRECTORY);
         if(!keysDirectory.exists())
             keysDirectory.mkdir();
 
         RSAPrivateKey privateKey = (RSAPrivateKey) pair.getPrivate();
         PemFile pemFile = new PemFile(privateKey, "RSA PRIVATE KEY");
-        pemFile.write("keys/id_rsa");
+        pemFile.write(Constants.PRIVATE_KEY_FILE);
 
         RSAPublicKey publicKey = (RSAPublicKey) pair.getPublic();
         PemFile publicPem = new PemFile(publicKey, "RSA PUBLIC KEY");
-        publicPem.write("keys/id_rsa_pub");
+        publicPem.write(Constants.PUBLIC_KEY_FILE);
     }
 
     public static RSAPrivateKey getPrivateKey(File file) throws NoSuchAlgorithmException {
-        KeyFactory factory = KeyFactory.getInstance("RSA");
+        KeyFactory factory = KeyFactory.getInstance(ENCRYPTION_ALGORITHM);
 
         try (FileReader keyReader = new FileReader(file); PemReader pemReader = new PemReader(keyReader)) {
             PemObject pemObject = pemReader.readPemObject();
@@ -52,7 +56,7 @@ public class BlockchainUtils {
     }
 
     public static RSAPublicKey getPublicKey(File file) throws NoSuchAlgorithmException {
-        KeyFactory factory = KeyFactory.getInstance("RSA");
+        KeyFactory factory = KeyFactory.getInstance(ENCRYPTION_ALGORITHM);
 
         try (FileReader keyReader = new FileReader(file); PemReader pemReader = new PemReader(keyReader)) {
             PemObject pemObject = pemReader.readPemObject();
@@ -66,7 +70,7 @@ public class BlockchainUtils {
     }
 
     public static String hash(String originalString) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        MessageDigest digest = MessageDigest.getInstance(HASHING_ALGORITHM);
         byte[] hash = digest.digest(originalString.getBytes(StandardCharsets.UTF_8));
         return new String(Hex.encode(hash));
     }

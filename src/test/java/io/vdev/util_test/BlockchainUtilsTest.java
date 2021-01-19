@@ -1,6 +1,7 @@
 package io.vdev.util_test;
 
 import io.vdev.util.BlockchainUtils;
+import io.vdev.util.Constants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,8 @@ public class BlockchainUtilsTest {
         RSAPublicKey originalPublicKey = (RSAPublicKey) pair.getPublic();
         BlockchainUtils.generatePemFile(pair);
         
-        RSAPrivateKey privateKey = BlockchainUtils.getPrivateKey(new File(System.getProperty("user.dir") + "/keys/id_rsa"));
-        RSAPublicKey publicKey = BlockchainUtils.getPublicKey(new File(System.getProperty("user.dir") + "/keys/id_rsa_pub"));
+        RSAPrivateKey privateKey = BlockchainUtils.getPrivateKey(new File(System.getProperty("user.dir") + "/" + Constants.PRIVATE_KEY_FILE));
+        RSAPublicKey publicKey = BlockchainUtils.getPublicKey(new File(System.getProperty("user.dir") + "/" + Constants.PUBLIC_KEY_FILE));
 
         Assertions.assertEquals(originalPrivateKey, privateKey);
         Assertions.assertEquals(originalPublicKey, publicKey);
