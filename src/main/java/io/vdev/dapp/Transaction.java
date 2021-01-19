@@ -2,7 +2,7 @@ package io.vdev.dapp;
 
 import java.util.UUID;
 
-public class Transaction {
+public class Transaction implements ObjectWithPayload {
     private String senderPublicKey;
     private String receiverPublicKey;
     private String type;
