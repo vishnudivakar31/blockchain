@@ -21,6 +21,7 @@
             <groupId>io.vdev</groupId>
             <artifactId>p2p</artifactId>
             <version>0.1</version>
+            <scope>system</scope>
             <systemPath>${basedir}/src/lib/p2p.jar</systemPath>
         </dependency>
 
