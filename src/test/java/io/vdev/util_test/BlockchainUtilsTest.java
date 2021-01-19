@@ -1,6 +1,6 @@
 package io.vdev.util_test;
 
-import io.vdev.dapp.util.BlockchainUtils;
+import io.vdev.util.BlockchainUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package io.vdev.dapp.util;
+package io.vdev.util;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.util.io.pem.PemObject;
