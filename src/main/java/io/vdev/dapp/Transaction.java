@@ -1,8 +1,9 @@
 package io.vdev.dapp;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Transaction {
+public class Transaction implements Serializable {
     private String senderPublicKey;
     private String receiverPublicKey;
     private String type;
