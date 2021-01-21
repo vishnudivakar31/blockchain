@@ -20,6 +20,8 @@ public class BlockNode implements NodeListener {
     private final Wallet wallet;
     private List<Peer> peers;
     private final int port;
+    private final String currentIPPort;
+    private final String knownIpPort;
 
     private BlockNode(int port) throws NoSuchAlgorithmException, IOException {
         this.node = new Node(port, this);
@@ -27,10 +29,14 @@ public class BlockNode implements NodeListener {
         this.wallet = Wallet.getInstance();
         this.peers = new ArrayList<>();
         this.port = port;
+        this.currentIPPort = InetAddress.getLocalHost().getHostAddress() + ":" + port;
+        this.knownIpPort = Constants.KNOWN_HOST_IP + ":" + Constants.KNOWN_HOST_PORT;
         System.out.println("node started on " + port + " epoch: " + System.currentTimeMillis());
-        if(!InetAddress.getLocalHost().getHostAddress().equals(Constants.KNOWN_HOST_IP) && (port != Constants.KNOWN_HOST_PORT)) {
+        this.peers.add(new Peer(InetAddress.getLocalHost().getHostAddress(), port));
+        if(!this.currentIPPort.equals(this.knownIpPort)) {
             System.out.println("discovering nodes...");
-            BlockMessage blockMessage = new BlockMessage(Constants.MessageConstants.NEW_CONNECTION, "");
+            Peer peer = new Peer(InetAddress.getLocalHost().getHostAddress(), this.port);
+            BlockMessage blockMessage = new BlockMessage(peer, Constants.MessageConstants.NEW_CONNECTION, this.peers);
             Message msg = new Message(new Sender(Constants.KNOWN_HOST_IP, Constants.KNOWN_HOST_PORT),
                     P2PUtil.convertToByteArray(blockMessage));
             this.node.sendToNode(msg);
@@ -46,17 +52,23 @@ public class BlockNode implements NodeListener {
 
     private void broadcast(BlockMessage message) throws IOException {
         for(Peer peer : peers) {
+            message.setPeer(new Peer(InetAddress.getLocalHost().getHostAddress(), this.port));
             Sender sender = new Sender(peer.getIp(), peer.getPort());
             Message msg = new Message(sender, P2PUtil.convertToByteArray(message));
             this.node.sendToNode(msg);
         }
     }
 
-    private void addToPeerList(String ip, int port) throws IOException {
-        Peer peer = new Peer(ip, port);
-        if(!peers.contains(peer) && (this.port != port || !ip.equals(InetAddress.getLocalHost().getHostAddress()))) {
-            peers.add(peer);
-            BlockMessage blockMessage = new BlockMessage(Constants.MessageConstants.NEW_CONNECTION, "");
+    private void addToPeerList(List<Peer> peers) throws IOException {
+        boolean changed = false;
+        for(Peer peer : peers) {
+            if(!this.peers.contains(peer)) {
+                changed = true;
+                this.peers.add(peer);
+            }
+        }
+        if(changed) {
+            BlockMessage blockMessage = new BlockMessage(Constants.MessageConstants.NEW_CONNECTION, this.peers);
             broadcast(blockMessage);
         }
     }
@@ -76,7 +88,7 @@ public class BlockNode implements NodeListener {
         try {
             BlockMessage msg = (BlockMessage) P2PUtil.convertFromByteArray(dataBytes);
             if(msg.getType().equals(Constants.MessageConstants.NEW_CONNECTION)) {
-                addToPeerList(message.getSender().getIp(), message.getSender().getPort());
+                addToPeerList((List<Peer>)msg.getData());
             }
         } catch (IOException e) {
             e.printStackTrace();
