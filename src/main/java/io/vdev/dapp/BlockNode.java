@@ -9,6 +9,7 @@ import io.vdev.util.P2PUtil;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +35,17 @@ public class BlockNode implements NodeListener {
         System.out.println("node started on " + port + " epoch: " + System.currentTimeMillis());
         this.peers.add(new Peer(InetAddress.getLocalHost().getHostAddress(), port));
         if(!this.currentIPPort.equals(this.knownIpPort)) {
-            System.out.println("discovering nodes...");
-            Peer peer = new Peer(InetAddress.getLocalHost().getHostAddress(), this.port);
-            BlockMessage blockMessage = new BlockMessage(peer, Constants.MessageConstants.NEW_CONNECTION, this.peers);
-            Message msg = new Message(new Sender(Constants.KNOWN_HOST_IP, Constants.KNOWN_HOST_PORT),
-                    P2PUtil.convertToByteArray(blockMessage));
-            this.node.sendToNode(msg);
+            this.peerDiscovery();
         }
+    }
+
+    private void peerDiscovery() throws IOException {
+        System.out.println("discovering nodes...");
+        Peer peer = new Peer(InetAddress.getLocalHost().getHostAddress(), this.port);
+        BlockMessage blockMessage = new BlockMessage(peer, Constants.MessageConstants.NEW_CONNECTION, this.peers);
+        Message msg = new Message(new Sender(Constants.KNOWN_HOST_IP, Constants.KNOWN_HOST_PORT),
+                P2PUtil.convertToByteArray(blockMessage));
+        this.node.sendToNode(msg);
     }
 
     public static BlockNode getInstance(int port) throws NoSuchAlgorithmException, IOException {
