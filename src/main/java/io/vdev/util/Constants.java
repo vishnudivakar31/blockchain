@@ -9,5 +9,6 @@ public class Constants {
 
     public class MessageConstants {
         public static final String NEW_CONNECTION = "NEW_CONNECTION";
+        public static final String NEW_TRANSACTION = "NEW_TRANSACTION";
     }
 }

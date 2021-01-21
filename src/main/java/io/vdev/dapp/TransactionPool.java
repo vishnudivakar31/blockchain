@@ -21,6 +21,10 @@ public class TransactionPool {
         return false;
     }
 
+    public int getPoolSize() {
+        return transactions.size();
+    }
+
     public void removeFromPool(List<Transaction> approvedTransactions) {
         List<Transaction> newTransactionPool = new ArrayList<>();
         for(Transaction transaction : transactions) {

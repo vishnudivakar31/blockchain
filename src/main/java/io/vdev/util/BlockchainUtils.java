@@ -14,6 +14,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 public class BlockchainUtils {
 
@@ -73,6 +74,13 @@ public class BlockchainUtils {
         MessageDigest digest = MessageDigest.getInstance(HASHING_ALGORITHM);
         byte[] hash = digest.digest(originalString.getBytes(StandardCharsets.UTF_8));
         return new String(Hex.encode(hash));
+    }
+
+    public static RSAPublicKey getPublicKeyFromString(String publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        byte[] decodeBytes = Base64.getDecoder().decode(publicKey);
+        KeyFactory factory = KeyFactory.getInstance(ENCRYPTION_ALGORITHM);
+        RSAPublicKey key = (RSAPublicKey) factory.generatePublic(new X509EncodedKeySpec(decodeBytes));
+        return key;
     }
 
 }

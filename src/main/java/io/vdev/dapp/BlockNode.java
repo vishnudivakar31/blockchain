@@ -4,13 +4,16 @@ import io.vdev.socket.Message;
 import io.vdev.socket.Node;
 import io.vdev.socket.NodeListener;
 import io.vdev.socket.Sender;
+import io.vdev.util.BlockchainUtils;
 import io.vdev.util.Constants;
 import io.vdev.util.P2PUtil;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,6 +89,32 @@ public class BlockNode implements NodeListener {
         return peers;
     }
 
+    public Wallet getWallet() {
+        return wallet;
+    }
+
+    public String getCurrentIPPort() {
+        return currentIPPort;
+    }
+
+    public String getKnownIpPort() {
+        return knownIpPort;
+    }
+
+    public void addToTransactionPool(Transaction transaction)
+            throws InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, IOException {
+        String signature = transaction.getSignature();
+        String senderPublicKey = transaction.getSenderPublicKey();
+        Boolean transactionExists = pool.transactionExists(transaction);
+        Boolean signatureValid = Wallet.verify(transaction.payload(),
+                signature, BlockchainUtils.getPublicKeyFromString(senderPublicKey));
+        if(!transactionExists && signatureValid) {
+            pool.addTransaction(transaction);
+            BlockMessage msg = new BlockMessage(Constants.MessageConstants.NEW_TRANSACTION, transaction);
+            broadcast(msg);
+        }
+    }
+
     @Override
     public void onMessage(Message message) {
         //TODO: HANDLE NEW MESSAGE
@@ -94,10 +123,21 @@ public class BlockNode implements NodeListener {
             BlockMessage msg = (BlockMessage) P2PUtil.convertFromByteArray(dataBytes);
             if(msg.getType().equals(Constants.MessageConstants.NEW_CONNECTION)) {
                 addToPeerList((List<Peer>)msg.getData());
+            } else if (msg.getType().equals(Constants.MessageConstants.NEW_TRANSACTION)) {
+                Transaction newTransaction = (Transaction) msg.getData();
+                addToTransactionPool(newTransaction);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
             e.printStackTrace();
         }
     }

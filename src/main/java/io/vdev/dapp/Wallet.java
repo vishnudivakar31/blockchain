@@ -60,13 +60,14 @@ public class Wallet {
         return signatureInstance.verify(signatureBytes);
     }
 
-    public RSAPublicKey getPublicKey() {
-        return publicKey;
+    public String getPublicKey() {
+        String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+        return encodedPublicKey;
     }
 
     public Transaction createTransaction(String receiverPublicKey, String type, Double amount)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        Transaction transaction = new Transaction(publicKey.toString(), receiverPublicKey, type, amount);
+        Transaction transaction = new Transaction(getPublicKey(), receiverPublicKey, type, amount);
         String signature = sign(transaction.payload());
         transaction.sign(signature);
         return transaction;
