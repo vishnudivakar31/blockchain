@@ -21,10 +21,5 @@ public class Application {
         BlockNode blockNode = BlockNode.getInstance(nodePort);
         RestServer server = RestServer.getInstance(blockNode);
         server.start(serverPort);
-        while (true) {
-            Thread.sleep(10000);
-            System.out.println("Known peers");
-            System.out.println(blockNode.getPeers());
-        }
     }
 }

@@ -35,9 +35,15 @@ public class RestServer {
 
     public void start(int port) {
         server = Javalin.create().start(port);
-        server.get("public_key", ctx -> fetchPublicKey(ctx));
+        server.get("/known_peers", ctx -> fetchKnownPeers(ctx));
+        server.get("/public_key", ctx -> fetchPublicKey(ctx));
         server.get("/transaction_pool", ctx -> fetchTransactionPool(ctx));
         server.post("/transaction", ctx -> createTransaction(ctx));
+    }
+
+    private void fetchKnownPeers(Context ctx) throws JsonProcessingException {
+        List<Peer> peers = blockNode.getPeers();
+        ctx.result(objectMapper.writeValueAsString(peers));
     }
 
     private void fetchPublicKey(Context ctx) throws JsonProcessingException {
