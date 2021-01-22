@@ -9,7 +9,7 @@ import java.io.OutputStreamWriter;
 import java.security.Key;
 
 public class PemFile {
-    private PemObject pemObject;
+    private final PemObject pemObject;
 
     public PemFile(Key key, String description) {
         this.pemObject = new PemObject(description, key.getEncoded());

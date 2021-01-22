@@ -31,6 +31,7 @@ public class BlockchainUtils {
     public static void generatePemFile(KeyPair pair) throws IOException {
         File keysDirectory = new File(Constants.KEYS_DIRECTORY);
         if(!keysDirectory.exists())
+            //noinspection ResultOfMethodCallIgnored
             keysDirectory.mkdir();
 
         RSAPrivateKey privateKey = (RSAPrivateKey) pair.getPrivate();
@@ -79,8 +80,7 @@ public class BlockchainUtils {
     public static RSAPublicKey getPublicKeyFromString(String publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] decodeBytes = Base64.getDecoder().decode(publicKey);
         KeyFactory factory = KeyFactory.getInstance(ENCRYPTION_ALGORITHM);
-        RSAPublicKey key = (RSAPublicKey) factory.generatePublic(new X509EncodedKeySpec(decodeBytes));
-        return key;
+        return (RSAPublicKey) factory.generatePublic(new X509EncodedKeySpec(decodeBytes));
     }
 
 }

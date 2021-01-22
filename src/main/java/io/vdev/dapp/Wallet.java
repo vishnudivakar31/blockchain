@@ -61,8 +61,7 @@ public class Wallet {
     }
 
     public String getPublicKey() {
-        String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-        return encodedPublicKey;
+        return Base64.getEncoder().encodeToString(publicKey.getEncoded());
     }
 
     public Transaction createTransaction(String receiverPublicKey, String type, Double amount)

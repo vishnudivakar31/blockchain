@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.vdev.util.Constants;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -16,9 +17,8 @@ import java.util.Map;
 
 public class RestServer {
     private static RestServer instance = null;
-    private BlockNode blockNode;
-    private Javalin server;
-    private ObjectMapper objectMapper;
+    private final BlockNode blockNode;
+    private final ObjectMapper objectMapper;
 
 
     private RestServer(BlockNode blockNode) {
@@ -34,11 +34,11 @@ public class RestServer {
     }
 
     public void start(int port) {
-        server = Javalin.create().start(port);
-        server.get("/known_peers", ctx -> fetchKnownPeers(ctx));
-        server.get("/public_key", ctx -> fetchPublicKey(ctx));
-        server.get("/transaction_pool", ctx -> fetchTransactionPool(ctx));
-        server.post("/transaction", ctx -> createTransaction(ctx));
+        Javalin server = Javalin.create().start(port);
+        server.get("/known_peers", this::fetchKnownPeers);
+        server.get("/public_key", this::fetchPublicKey);
+        server.get("/transaction_pool", this::fetchTransactionPool);
+        server.post("/transaction", this::createTransaction);
     }
 
     private void fetchKnownPeers(Context ctx) throws JsonProcessingException {
@@ -56,8 +56,10 @@ public class RestServer {
             throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, InvalidKeySpecException {
         String postBody = ctx.body();
         Map<String, Object> body = objectMapper.readValue(postBody, Map.class);
-        Transaction transaction = blockNode.getWallet().createTransaction((String) body.get("receiver_public_key"),
-                (String )body.get("transaction_type"), (Double) body.get("amount"));
+        Transaction transaction = blockNode.getWallet().createTransaction(
+                (String) body.get(Constants.TransactionConstants.RECEIVER_PUBLIC_KEY),
+                (String )body.get(Constants.TransactionConstants.TRANSACTION_TYPE),
+                (Double) body.get(Constants.TransactionConstants.AMOUNT));
         blockNode.addToTransactionPool(transaction);
         ctx.status(201);
         ctx.result(objectMapper.writeValueAsString(transaction));

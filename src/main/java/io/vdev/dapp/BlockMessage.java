@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 public class BlockMessage implements Serializable {
     private Peer peer;
-    private String type;
-    private Object data;
+    private final String type;
+    private final Object data;
 
     public BlockMessage(String type, Object data) {
         this.type = type;

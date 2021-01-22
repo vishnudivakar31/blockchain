@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class Transaction implements Serializable {
-    private String senderPublicKey;
-    private String receiverPublicKey;
-    private String type;
-    private Double amount;
-    private String id;
-    private long timestamp;
+    private final String senderPublicKey;
+    private final String receiverPublicKey;
+    private final String type;
+    private final Double amount;
+    private final String id;
+    private final long timestamp;
     private String signature;
 
     public Transaction(String senderPublicKey, String receiverPublicKey, String type, Double amount) {

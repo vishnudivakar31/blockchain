@@ -105,8 +105,8 @@ public class BlockNode implements NodeListener {
             throws InvalidKeySpecException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, IOException {
         String signature = transaction.getSignature();
         String senderPublicKey = transaction.getSenderPublicKey();
-        Boolean transactionExists = pool.transactionExists(transaction);
-        Boolean signatureValid = Wallet.verify(transaction.payload(),
+        boolean transactionExists = pool.transactionExists(transaction);
+        boolean signatureValid = Wallet.verify(transaction.payload(),
                 signature, BlockchainUtils.getPublicKeyFromString(senderPublicKey));
         if(!transactionExists && signatureValid) {
             pool.addTransaction(transaction);
@@ -127,17 +127,7 @@ public class BlockNode implements NodeListener {
                 Transaction newTransaction = (Transaction) msg.getData();
                 addToTransactionPool(newTransaction);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (SignatureException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        } catch (IOException | ClassNotFoundException | NoSuchAlgorithmException | InvalidKeyException | SignatureException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
     }

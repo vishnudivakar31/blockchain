@@ -4,14 +4,11 @@ import io.vdev.dapp.BlockNode;
 import io.vdev.dapp.RestServer;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
 
 public class Application {
     public static void main(String[] args)
-            throws IOException, NoSuchAlgorithmException, InterruptedException, SignatureException, InvalidKeyException, InvalidKeySpecException {
+            throws IOException, NoSuchAlgorithmException {
         if(args.length != 2) {
             System.out.println("**Error -- Expected two arguments: port of the node -- port of the rest server");
             return;

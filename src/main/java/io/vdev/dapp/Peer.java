@@ -1,7 +1,6 @@
 package io.vdev.dapp;
 
 import java.io.Serializable;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Objects;
 
 public class Peer implements Serializable {
