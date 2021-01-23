@@ -15,7 +15,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BlockNode implements NodeListener {
     private static BlockNode instance = null;
@@ -26,6 +28,7 @@ public class BlockNode implements NodeListener {
     private final int port;
     private final String currentIPPort;
     private final String knownIpPort;
+    private Map<String, Integer> messageCounter;
 
     private BlockNode(int port) throws NoSuchAlgorithmException, IOException {
         this.node = new Node(port, this);
@@ -33,6 +36,7 @@ public class BlockNode implements NodeListener {
         this.wallet = Wallet.getInstance();
         this.peers = new ArrayList<>();
         this.port = port;
+        this.messageCounter = new HashMap<>();
         this.currentIPPort = InetAddress.getLocalHost().getHostAddress() + ":" + port;
         this.knownIpPort = Constants.KNOWN_HOST_IP + ":" + Constants.KNOWN_HOST_PORT;
         System.out.println("node started on " + port + " epoch: " + System.currentTimeMillis());
@@ -76,6 +80,7 @@ public class BlockNode implements NodeListener {
             }
         }
         if(changed) {
+            messageCounter.put(Constants.MessageConstants.NEW_CONNECTION, getPeers().size());
             BlockMessage blockMessage = new BlockMessage(Constants.MessageConstants.NEW_CONNECTION, this.peers);
             broadcast(blockMessage);
         }
@@ -143,7 +148,24 @@ public class BlockNode implements NodeListener {
     }
 
     @Override
-    public void onCommStatus(boolean b, String s) {
-        //TODO: HANDLE COMM ERRORS
+    public void onCommStatus(boolean b, String s, Message originalMessage) {
+        byte[] dataBytes = originalMessage.getDataBytes();
+        try {
+            BlockMessage msg = (BlockMessage) P2PUtil.convertFromByteArray(dataBytes);
+            if(msg.getType().equals(Constants.MessageConstants.NEW_CONNECTION) &&
+                    messageCounter.containsKey(Constants.MessageConstants.NEW_CONNECTION)) {
+
+                messageCounter.put(Constants.MessageConstants.NEW_CONNECTION,
+                        messageCounter.get(Constants.MessageConstants.NEW_CONNECTION) - 1);
+                if(messageCounter.get(Constants.MessageConstants.NEW_CONNECTION) == 0) {
+                    BlockMessage newMsg = new BlockMessage(Constants.MessageConstants.ENTIRE_TRANSACTION_POOL, getPool().getTransactions());
+                    broadcast(newMsg);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
