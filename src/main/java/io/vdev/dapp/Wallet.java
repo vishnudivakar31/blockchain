@@ -9,6 +9,7 @@ import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
+import java.util.List;
 
 public class Wallet {
     private static Wallet instance = null;
@@ -70,6 +71,14 @@ public class Wallet {
         String signature = sign(transaction.payload());
         transaction.sign(signature);
         return transaction;
+    }
+
+    public Block createBlock(List<Transaction> transactions, String lastHash, long blockCount)
+            throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        Block block = new Block(transactions, lastHash, getPublicKey(), blockCount);
+        String signature = sign(block.payload());
+        block.sign(signature);
+        return block;
     }
 
 }
