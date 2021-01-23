@@ -10,6 +10,7 @@ public class Constants {
     public static class MessageConstants {
         public static final String NEW_CONNECTION = "NEW_CONNECTION";
         public static final String NEW_TRANSACTION = "NEW_TRANSACTION";
+        public static final String ENTIRE_TRANSACTION_POOL = "ENTIRE_TRANSACTION_POOL";
     }
 
     public static class TransactionConstants {

@@ -126,9 +126,19 @@ public class BlockNode implements NodeListener {
             } else if (msg.getType().equals(Constants.MessageConstants.NEW_TRANSACTION)) {
                 Transaction newTransaction = (Transaction) msg.getData();
                 addToTransactionPool(newTransaction);
+            } else if (msg.getType().equals(Constants.MessageConstants.ENTIRE_TRANSACTION_POOL)) {
+                List<Transaction> transactions = (List<Transaction>) msg.getData();
+                handleTransactionPool(transactions);
             }
         } catch (IOException | ClassNotFoundException | NoSuchAlgorithmException | InvalidKeyException | SignatureException | InvalidKeySpecException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void handleTransactionPool(List<Transaction> transactions)
+            throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, InvalidKeyException, SignatureException {
+        for(Transaction transaction : transactions) {
+            addToTransactionPool(transaction);
         }
     }
 
